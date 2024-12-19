@@ -34,7 +34,6 @@ COLOR = random.choice([
         '\033[42m'
         '\033[41m',
 ])
- 
 
 COLORS = [
         '\033[47m',
@@ -52,7 +51,7 @@ hold_block = []
 next_blocks = []
 
 # 블록 색상(숫자로 표현)
-BLOCK_CHAR = "#"
+BLOCK_CHAR = "1"
 
 def get_front_row(row, column):
     if index_exists(next_blocks[row], column): 
@@ -115,7 +114,7 @@ def print_board(board, block=None, block_x=0, block_y=0):
             '\033[1;37m |' +
             ''.join(map(str, row))
               .replace('0', '  ')
-              .replace('#', (COLOR + '  ' + RESET_COLOR)) +
+              .replace(BLOCK_CHAR, (COLOR + '  ' + RESET_COLOR)) +
             '\033[1;37m| \033[0m'
             )
         match i:
@@ -237,12 +236,16 @@ def set_block_release(next_blocks):
     return next_blocks, current_block
 
 def start_game():
-    front_spaces = ' ' * ((terminal_column - 22) // 2)
-    print(front_spaces + "### ### ### ###  #  ##")
-    print(front_spaces + " #  #    #  #  # # #  ")
-    print(front_spaces + " #  ###  #  ###  #  ## ")
-    print(front_spaces + " #  #    #  # #  #    #")
-    print(front_spaces + " #  ###  #  #  # #  ##")
+    os.system('clear')
+    front_spaces = ' ' * ((terminal_column - 87) // 2)
+    print('\n' * ((terminal_row + 9) // 3))
+    print(front_spaces + ("##### ### ##### ###   #   ###").replace(' ', '   ').replace('#', COLOR + '   ' + RESET_COLOR))
+    print(front_spaces + ("  #   #     #   #  #  #  #  ") .replace(' ', '   ').replace('#', COLOR + '   ' + RESET_COLOR))
+    print(front_spaces + ("  #   #     #   #  #  #  #   ").replace(' ', '   ').replace('#', COLOR + '   ' + RESET_COLOR))
+    print(front_spaces + ("  #   ###   #   ###   #   ##").replace(' ', '   ').replace('#', COLOR + '   ' + RESET_COLOR))
+    print(front_spaces + ("  #   #     #   #  #  #     #") .replace(' ', '   ').replace('#', COLOR + '   ' + RESET_COLOR))
+    print(front_spaces + ("  #   #     #   #  #  #     #") .replace(' ', '   ').replace('#', COLOR + '   ' + RESET_COLOR))
+    print(front_spaces + ("  #   ###   #   #  #  #  ###") .replace(' ', '   ').replace('#', COLOR + '   ' + RESET_COLOR))
     print('\n\n')
     front_spaces = ' ' * ((terminal_column - 18) // 2)
     print(front_spaces + "Press to Continue"); _ = sys.stdin.read(1)
