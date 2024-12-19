@@ -3,7 +3,6 @@ import os
 import random
 import sys
 
-
 terminal_column = os.get_terminal_size()[0]
 terminal_row = os.get_terminal_size()[1]
 
@@ -182,14 +181,22 @@ def place_block(board, block, block_x, block_y):
 
 # 가득 찬 라인 삭제
 def clear_lines(board, block, block_x, block_y):
-    new_board = [row for row in board if any(cell == 0 for cell in row)]
-    lines_cleared = BOARD_HEIGHT - len(new_board)
-    for _ in range(lines_cleared):
-        new_board.insert(0, [0] * BOARD_WIDTH)
+    anime_board = []
+    new_board = []
+    lines_cleared = 0
+    for i, row in enumerate(board):
+        if all(row):
+            lines_cleared += 1
+            anime_board.insert(i, [0] * BOARD_WIDTH)
+            new_board.insert(0, [0] * BOARD_WIDTH)
+        else:   
+            new_board.insert(i, row)
+            anime_board.insert(i, row)
+    
     if not board == new_board:
         print_board(board,block, block_x, block_y)
         time.sleep(0.3)
-        print_board(new_board, block, block_x, block_y)
+        print_board(anime_board)
         time.sleep(0.7)
         print_board(board,block, block_x, block_y)
         time.sleep(0.7)
@@ -214,12 +221,12 @@ def set_block_release(next_blocks):
     return next_blocks, current_block
 
 def end_game(board, time_set):
-    print(f"{COLORS[3]}  {RESET_COLOR}; You Game Over!")
-    print(f"{COLORS[4]}  {RESET_COLOR}; You  Cleared  {line} Lines")
-    print(f"{COLORS[5]}  {RESET_COLOR}; You  Got      {score} Scores")
-    print(f"{COLORS[6]}  {RESET_COLOR}; Your Level Is {level} Levels")
+    print(f":{COLORS[3]}  {RESET_COLOR}; You Game Over!")
+    print(f":{COLORS[4]}  {RESET_COLOR}; You  Cleared  {line} Lines")
+    print(f":{COLORS[5]}  {RESET_COLOR}; You  Got      {score} Scores")
+    print(f":{COLORS[6]}  {RESET_COLOR}; Your Level Is {level} Levels")
     print('\n\n')
-    print(f"{COLOR} \033[1;37A YOU PLAYED {round(time_set[0] - time_set[1], 2)} SECONDS {RESET_COLOR}")
+    print(f"{COLOR}| \033[1;37m YOU PLAYED {round(time_set[0] - time_set[1], 2)} SECONDS |{RESET_COLOR}")
     sys.exit()
 
 def check_level(score):
@@ -268,7 +275,7 @@ def main():
     
     next_blocks, current_block = set_block_release([get_random_tetris_block(), get_random_tetris_block(), get_random_tetris_block()])
     
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('clear')
     timeout = 1 / FPS
     while True:
         print_board(board, current_block, block_x, block_y)
@@ -293,23 +300,7 @@ def main():
             last_time = time.time()
 
         # 사용자 입력 처리
-        if os.name == 'nt':  # Windows
-            import msvcrt
-            if msvcrt.kbhit():
-                key = msvcrt.getch().decode().lower()
-                if key == 'a' and is_valid_position(board, current_block, block_x - 1, block_y):
-                    block_x -= 1
-                elif key == 'd' and is_valid_position(board, current_block, block_x + 1, block_y):
-                    block_x += 1
-                elif key == 'w':
-                    rotated_block = rotate_block(current_block)
-                    if is_valid_position(board, rotated_block, block_x, block_y):
-                        current_block = rotated_block
-                elif key == 's' and is_valid_position(board, current_block, block_x, block_y + 1):
-                    block_y += 1
-                elif key == 'q':
-                    print("Game Quit! Your Score:", score)
-                    sys.exit()
+        if os.name == 'nt': pass # Windows
         else:  # Linux/Mac
             import tty, termios
             import select
