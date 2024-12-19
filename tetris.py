@@ -3,23 +3,18 @@ import os
 import random
 import sys
 
+
 terminal_column = os.get_terminal_size()[0]
 terminal_row = os.get_terminal_size()[1]
-# TODO 
-# 1 나올거 출력하기
-# 2 SCORE LINE LEVEL이런거 구현하기
-# 3 화면 맞추기
-# 4 그 좇같은 컴파일하기
-# 5 앞의 4가지를 잊기 않기
 
 score = 0
 line =0
 level =0
-# 보드와 블록 설정
+# 보드와 블록 설
 BOARD_WIDTH = 10
 BOARD_HEIGHT = 20
 
-FPS = 20
+FPS = 30
 
 # 블록 모양 (테트로미노)
 TETROMINOS = [
@@ -37,9 +32,11 @@ COLOR = random.choice([
         '\033[45m',
         '\033[44m',
         '\033[43m',
-        '\033[42m',
-        '\033[41m'
-    ])
+        '\033[42m'
+        '\033[41m',
+])
+ 
+
 COLORS = [
         '\033[47m',
         '\033[46m',
@@ -48,8 +45,8 @@ COLORS = [
         '\033[43m',
         '\033[42m',
         '\033[41m'
-]
- 
+        ]
+
 RESET_COLOR = '\033[0m'
 
 hold_block = []
@@ -57,6 +54,9 @@ next_blocks = []
 
 # 블록 색상(숫자로 표현)
 BLOCK_CHAR = "#"
+
+
+
 
 def get_front_row(row, column):
     if index_exists(next_blocks[row], column): 
@@ -102,7 +102,7 @@ def print_board(board, block=None, block_x=0, block_y=0):
             case 1:
                 screen += ('Next --------;')
             case 2 : screen += get_front_row(0,0)
-            case 3 : screen += get_front_row(0,1)
+            case 3 : screen += get_front_row(1,1)
             case 5 : screen += get_front_row(1,0)
             case 6 : screen += get_front_row(1,1)
             case 8 : screen += get_front_row(2,0)
@@ -181,11 +181,18 @@ def place_block(board, block, block_x, block_y):
                 board[block_y + y][block_x + x] = BLOCK_CHAR
 
 # 가득 찬 라인 삭제
-def clear_lines(board):
+def clear_lines(board, block, block_x, block_y):
     new_board = [row for row in board if any(cell == 0 for cell in row)]
     lines_cleared = BOARD_HEIGHT - len(new_board)
     for _ in range(lines_cleared):
         new_board.insert(0, [0] * BOARD_WIDTH)
+    if not board == new_board:
+        print_board(board,block, block_x, block_y)
+        time.sleep(0.3)
+        print_board(new_board, block, block_x, block_y)
+        time.sleep(0.7)
+        print_board(board,block, block_x, block_y)
+        time.sleep(0.7)
     return new_board, lines_cleared
 
 # 블록 회전
@@ -273,7 +280,7 @@ def main():
                 score += 1
             else:
                 place_block(board, current_block, block_x, block_y)
-                board, lines_cleared = clear_lines(board)
+                board, lines_cleared = clear_lines(board, current_block, block_x, block_y)
                 score += lines_cleared * 100
                 line += lines_cleared    
                 level, speed = check_level(score)
