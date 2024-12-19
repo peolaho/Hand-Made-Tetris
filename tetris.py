@@ -54,19 +54,22 @@ next_blocks = []
 # 블록 색상(숫자로 표현)
 BLOCK_CHAR = "#"
 
-
-
-
 def get_front_row(row, column):
     if index_exists(next_blocks[row], column): 
-        text = (''.join(map(str, next_blocks[row][column])).replace('0', '  ').replace('1', (COLOR + '  ' + RESET_COLOR)))
-        text_len = len(text.replace(COLOR, '').replace(RESET_COLOR, ''))
-        front_spaces = ' ' * (5)
-        backend_spaces = ' ' * (14 - (5 + text_len))
-        return front_spaces + text + backend_spaces
+        next_block_line = (' '.join(map(str, next_blocks[row][column])))
+        text = ''
+        for i in next_block_line.split():
+            if i == '1':
+                text += (COLOR + '  ' + RESET_COLOR)
+            else:
+                text += (RESET_COLOR + '  ' + RESET_COLOR)
+        text_len = len((text.replace(COLOR, '').replace(RESET_COLOR, '')))
+        
+        front_spaces = (((RESET_COLOR + ' ' + RESET_COLOR) * (5)))
+        backend_spaces = (((RESET_COLOR + ' ' + RESET_COLOR) * (14 - (5 + text_len))))
+        return (RESET_COLOR + front_spaces + RESET_COLOR + text + RESET_COLOR + backend_spaces + RESET_COLOR)
     else:
-        return ('  ' * 7)
-
+        return (RESET_COLOR + '  ' * 7)
 
 # 보드 초기화
 def create_board():
@@ -84,7 +87,6 @@ def index_exists(arr, i):
 
 # 보드 출력
 def print_board(board, block=None, block_x=0, block_y=0):
-    
     temp_board = [row[:] for row in board]  # 보드 복사
 
     # 현재 블록을 보드에 그리기
@@ -145,7 +147,8 @@ def print_board(board, block=None, block_x=0, block_y=0):
                     screen += '\n'
                 
             case _:
-                screen += ('\n')
+                screen += ('\n')   
+    
     move_cursor(1, 1)
     screen_height_half = len(screen.split('\n')) // 2 + 3
     for i in range(screen_height_half):
@@ -154,9 +157,22 @@ def print_board(board, block=None, block_x=0, block_y=0):
     print(screen)
 
     text = "\nControls: A - Left | D - Right | R - Rotate | S - Down | Q - Quit"
-    spaces = (' ' * (terminal_column - len(text) // 2))
+    spaces = (' ' * int(((terminal_column - len(text)) // 2)))
     
-    print('\n' + (' ' * int(((terminal_column - len(text)) // 2))) + "Controls: A - Left | D - Right | R - Rotate | S - Down | Q - Quit")
+    print('\n' + spaces + text)
+    
+    text = str(next_blocks)
+    try:
+        print (''.join(map(str, next_blocks[0][0])))
+        print (''.join(map(str, next_blocks[0][1])))
+        print ()
+        print (''.join(map(str, next_blocks[1][0])))
+        print (''.join(map(str, next_blocks[1][1])))
+        print ()
+        print (''.join(map(str, next_blocks[2][0])))
+        print (''.join(map(str, next_blocks[2][1])))
+    except:
+        pass
 
 # 블록이 보드에 유효한지 검사
 def is_valid_position(board, block, block_x, block_y):
@@ -220,13 +236,26 @@ def set_block_release(next_blocks):
     next_blocks = [next_blocks[1], next_blocks[2], get_random_tetris_block()]
     return next_blocks, current_block
 
-def end_game(board, time_set):
+def start_game():
+    front_spaces = ' ' * ((terminal_column - 22) // 2)
+    print(front_spaces + "### ### ### ###  #  ##")
+    print(front_spaces + " #  #    #  #  # # #  ")
+    print(front_spaces + " #  ###  #  ###  #  ## ")
+    print(front_spaces + " #  #    #  # #  #    #")
+    print(front_spaces + " #  ###  #  #  # #  ##")
+    print('\n\n')
+    front_spaces = ' ' * ((terminal_column - 18) // 2)
+    print(front_spaces + "Press to Continue"); _ = sys.stdin.read(1)
+    return 0
+
+def end_game(time_set):
     print(f":{COLORS[3]}  {RESET_COLOR}; You Game Over!")
     print(f":{COLORS[4]}  {RESET_COLOR}; You  Cleared  {line} Lines")
     print(f":{COLORS[5]}  {RESET_COLOR}; You  Got      {score} Scores")
     print(f":{COLORS[6]}  {RESET_COLOR}; Your Level Is {level} Levels")
     print('\n\n')
     print(f"{COLOR}| \033[1;37m YOU PLAYED {round(time_set[0] - time_set[1], 2)} SECONDS |{RESET_COLOR}")
+    print("Press to Continue"); _ = sys.stdin.read(1)
     sys.exit()
 
 def check_level(score):
@@ -286,6 +315,7 @@ def main():
                 block_y += 1
                 score += 1
             else:
+                os.system('clear')
                 place_block(board, current_block, block_x, block_y)
                 board, lines_cleared = clear_lines(board, current_block, block_x, block_y)
                 score += lines_cleared * 100
@@ -296,7 +326,7 @@ def main():
                 
                 block_x, block_y = get_center(current_block)
                 if not is_valid_position(board, current_block, block_x, block_y):
-                    end_game(board, [last_time, start_time])
+                    end_game([last_time, start_time])
             last_time = time.time()
 
         # 사용자 입력 처리
@@ -342,11 +372,11 @@ def main():
                                 current_block = hold_block
                                 hold_block = temp_block
                     elif key == 'q':
-                        end_game(board, [last_time, start_time])
-
+                        end_game([last_time, start_time])
             finally:
                 termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
             time.sleep(1 / FPS)
 
 if __name__ == "__main__":
+    start_game()
     main()
