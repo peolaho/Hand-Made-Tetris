@@ -40,6 +40,16 @@ COLOR = random.choice([
         '\033[42m',
         '\033[41m'
     ])
+COLORS = [
+        '\033[47m',
+        '\033[46m',
+        '\033[45m',
+        '\033[44m',
+        '\033[43m',
+        '\033[42m',
+        '\033[41m'
+]
+ 
 RESET_COLOR = '\033[0m'
 
 hold_block = []
@@ -196,8 +206,13 @@ def set_block_release(next_blocks):
     next_blocks = [next_blocks[1], next_blocks[2], get_random_tetris_block()]
     return next_blocks, current_block
 
-def end_game(board):
-    print("Game Over! Your Score:", score)
+def end_game(board, time_set):
+    print(f"{COLORS[3]}  {RESET_COLOR}; You Game Over!")
+    print(f"{COLORS[4]}  {RESET_COLOR}; You  Cleared  {line} Lines")
+    print(f"{COLORS[5]}  {RESET_COLOR}; You  Got      {score} Scores")
+    print(f"{COLORS[6]}  {RESET_COLOR}; Your Level Is {level} Levels")
+    print('\n\n')
+    print(f"{COLOR} \033[1;37A YOU PLAYED {round(time_set[0] - time_set[1], 2)} SECONDS {RESET_COLOR}")
     sys.exit()
 
 def check_level(score):
@@ -231,7 +246,6 @@ def check_level(score):
     elif  score >= 999999: return 27,0.66
     elif  score >= 999999: return 28,0.33
 
-
 # 메인 게임 루프
 def main():
     global next_blocks
@@ -242,6 +256,7 @@ def main():
     block_x, block_y = get_center(current_block)
 
     speed = 16  # 초기 속도
+    start_time = time.time()
     last_time = time.time()
     
     next_blocks, current_block = set_block_release([get_random_tetris_block(), get_random_tetris_block(), get_random_tetris_block()])
@@ -267,7 +282,7 @@ def main():
                 
                 block_x, block_y = get_center(current_block)
                 if not is_valid_position(board, current_block, block_x, block_y):
-                    end_game(board)
+                    end_game(board, [last_time, start_time])
             last_time = time.time()
 
         # 사용자 입력 처리
@@ -329,7 +344,7 @@ def main():
                                 current_block = hold_block
                                 hold_block = temp_block
                     elif key == 'q':
-                        end_game(board)
+                        end_game(board, [last_time, start_time])
 
             finally:
                 termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
